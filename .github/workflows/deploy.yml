@@ -35,6 +35,10 @@ jobs:
         run: npm run build
 
       - uses: actions/configure-pages@v5
+        with:
+          # 仓库还没开 Pages 时自动启用，省得手动去 Settings 里点
+          # 若 GITHUB_TOKEN 权限不足，这一步仍会失败，需要手动开启（见 README）
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
