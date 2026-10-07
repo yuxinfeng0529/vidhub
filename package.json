@@ -1,0 +1,27 @@
+{
+  "name": "vidhub-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VidHub · AI 视频生成工作站 — 前端（纯前端演示版，数据全部来自本地 mock）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "pinia": "^3.0.4",
+    "vue": "^3.5.43",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.4",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.3",
+    "vue-tsc": "^3.3.12"
+  }
+}
