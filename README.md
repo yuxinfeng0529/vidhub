@@ -33,7 +33,7 @@ npm run preview      # 预览 dist 产物
 
 首次需要在仓库里手动开一次：**Settings → Pages → Source 选 `GitHub Actions`**。之后每次 `git push` 由 `.github/workflows/deploy.yml` 自动构建发布，不用再管。
 
-### 两个坑，都已经处理
+### 三个坑，都已经处理
 
 **1. 子路径。** Pages 的项目站点挂在 `https://<用户>.github.io/<仓库名>/`，不是域名根。所以 `vite.config.ts` 里按命令区分：
 
@@ -48,6 +48,10 @@ base: command === 'build' ? '/vidhub/' : '/'
 因为 `base` 是绝对路径，复制出来的外壳照样能加载，Vue Router 从 `pathname` 里解析出正确路由。**不需要**网上常见的那套「把路径塞进 query 再还原」的十几行 JS 重定向。
 
 > 深链接会返回 HTTP 404 状态码（内容正常，页面正常打开）——这是 Pages 的固有行为，只影响 SEO，不影响使用。
+
+**3. 产物目录与路由撞名。** Vite 默认把构建产物输出到 `dist/assets/`，而应用里正好有个 `/assets` 路由（资产库）。Pages 发现真的存在 `assets` 这个目录，就会把 `/vidhub/assets` 301 到 `/vidhub/assets/`，多一次跳转、URL 被迫带上尾斜杠。
+
+所以 `vite.config.ts` 里把 `build.assetsDir` 改成了 `'static'`。**应用里新增顶级路由时，记得别跟它撞名。**
 
 ### 部署到别的地方要改什么
 

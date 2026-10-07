@@ -38,6 +38,12 @@ export default defineConfig(({ command }) => ({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    // 默认目录名是 'assets'，会和应用的 /assets 路由（资产库）撞名：
+    // Pages 会先把 /vidhub/assets 301 到 /vidhub/assets/，多一次跳转、URL 被迫带上尾斜杠。
+    // 换成 static 彻底避开。
+    assetsDir: 'static',
+  },
   server: {
     port: 5173,
     host: '127.0.0.1',
