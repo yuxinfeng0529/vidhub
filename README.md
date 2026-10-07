@@ -9,7 +9,6 @@ VidHub 的**纯前端**实现：没有后端，没有数据库，所有数据来
 ## 跑起来
 
 ```bash
-cd vidhub-web
 npm install       # 已装过可跳过
 npm run dev       # → http://127.0.0.1:5173
 ```
@@ -17,12 +16,45 @@ npm run dev       # → http://127.0.0.1:5173
 其他命令：
 
 ```bash
-npm run build        # 类型检查 + 生产构建
+npm run build        # 类型检查 + 生产构建 → dist/
 npm run type-check   # 只跑 vue-tsc
 npm run preview      # 预览 dist 产物
 ```
 
 要求 Node 20.19+ 或 22.12+（Vite 8 的要求），本机 Node 24 没问题。
+
+---
+
+## 部署
+
+已配好 GitHub Pages 自动部署，推 `main` 就会触发。
+
+**线上地址**：<https://yuxinfeng0529.github.io/vidhub/>
+
+首次需要在仓库里手动开一次：**Settings → Pages → Source 选 `GitHub Actions`**。之后每次 `git push` 由 `.github/workflows/deploy.yml` 自动构建发布，不用再管。
+
+### 两个坑，都已经处理
+
+**1. 子路径。** Pages 的项目站点挂在 `https://<用户>.github.io/<仓库名>/`，不是域名根。所以 `vite.config.ts` 里按命令区分：
+
+```ts
+base: command === 'build' ? '/vidhub/' : '/'
+```
+
+构建走 `/vidhub/`，本地开发仍然是 `http://127.0.0.1:5173/`。**以后改仓库名，这里的 `'/vidhub/'` 要跟着改。**
+
+**2. 刷新 404。** Pages 是纯静态托管，没有 nginx 的 `try_files`，直接访问或刷新 `/vidhub/studio` 会 404。解决办法是构建时把 `index.html` 复制一份成 `404.html`（`vite.config.ts` 里的 `spaFallback()` 插件，在 `writeBundle` 阶段执行）。
+
+因为 `base` 是绝对路径，复制出来的外壳照样能加载，Vue Router 从 `pathname` 里解析出正确路由。**不需要**网上常见的那套「把路径塞进 query 再还原」的十几行 JS 重定向。
+
+> 深链接会返回 HTTP 404 状态码（内容正常，页面正常打开）——这是 Pages 的固有行为，只影响 SEO，不影响使用。
+
+### 部署到别的地方要改什么
+
+| 目标 | 改动 |
+|---|---|
+| 自己的服务器 / Nginx | `base` 改回 `'/'`，配 `try_files $uri $uri/ /index.html;` |
+| Vercel / Netlify | `base` 改回 `'/'`，加一条到 `/index.html` 的 SPA rewrite |
 
 ---
 
